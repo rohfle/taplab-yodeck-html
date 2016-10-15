@@ -1,0 +1,106 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>The HTML5 Herald</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+  <style>
+    .base {
+      margin: 0;
+      padding: 0;
+      width: 480px;
+      height: 100%;
+      background-color: #eee;
+    }
+
+    .container {
+      margin: 0 0rem;
+    }
+    .events {
+      margin: 1rem 2rem 0;
+    }
+
+    .container img {
+      width: 100%;
+    }
+
+    .container h1 {
+      font-size: 1.5em;
+    }
+
+    .container h2 {
+      font-size: 1.1em;
+    }
+
+    li, ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .right {
+      float: right;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Verdana;
+    }
+  </style>
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="base">
+    <div class="container">
+      <img src="img/TAP Lab Light.png">
+      <div class="events">
+        <h1>Upcoming Events</h1>
+        <ul></ul>
+    </div>
+  </div>
+  <script src="js/ical.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/moment-with-locales.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $.ajax("https://api.meetup.com/taplab/events?photo-host=public&page=20&sig_id=214914845&sig=475f82fa5e574c2634c853f970f2555751d8c126", {
+        crossDomain: true,
+        dataType: 'jsonp',
+        headers: {
+          'Access-Control-Allow-Headers': 'x-requested-with'
+        }
+      }).done(function(response){
+        if (response.meta.status == 200) {
+          $.each(response.data, function(idx, activity) {
+            if (idx >= 5) return false;
+            var name = activity.name;
+            var start = moment(activity.time);
+            var finish = moment(activity.time + activity.duration);
+            var html = "<h2>" + name + "</h2><span>" + start.format("ddd, D MMM") + "</span>";
+            html += '<span class="right">' + start.format("ha")
+            if (finish.isValid()) {
+              html += " - " +  finish.format("ha") ;
+            }
+            html += "</span>"
+            var node = $("<li>").html(html);
+            $('.events ul').append(node);
+          })
+        }
+      });
+    })
+  </script>
+</body>
+</html>
